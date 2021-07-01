@@ -18,16 +18,17 @@ public class AppointmentService {
 
     private final DoctorAvailabilityService availabilityService;
 
+    private final NotificationService notificationService;
+
     public String appointment(Appointment appointment){
         appointment.setAppointmentId(UUID.randomUUID().toString());
-        appointment.setCreatedDate(LocalDateTime.now());
-
+        appointment.setCreatedDate(LocalDateTime.now().toString());
+        appointment.setStatus("PendingPayment");
         List<Availability> availabilities = availabilityService.getAvailabilities(appointment.getDoctorId());
         boolean slotFound = false;
         for(Availability availability: availabilities){
             if(availability.getAvailabilityDate().equals(appointment.getAppointmentDate())
             && availability.getTimeSlot().equals(appointment.getTimeSlot())) {
-
                 if (!availability.isBooked()) {
                     availability.setBooked(true);
                     availabilityService.updateAvailability(availability);
@@ -41,9 +42,15 @@ public class AppointmentService {
         }
         if(slotFound) {
             appointmentRepository.save(appointment);
+            notify(appointment);
         }else{
             //TODO Not an available Slot exception
         }
         return appointment.getAppointmentId();
+    }
+
+    private void notify(Appointment appointment){
+
+        notificationService.notifyAppointmentConfirmation(appointment);
     }
 }

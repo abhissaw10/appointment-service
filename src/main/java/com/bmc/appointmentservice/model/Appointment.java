@@ -1,5 +1,6 @@
 package com.bmc.appointmentservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,11 @@ public class Appointment {
     private String doctorId;
     private String userId;
     private String timeSlot;
-    private boolean isBooked;
+    private String status;
     private LocalDate appointmentDate;
-    private LocalDateTime createdDate;
+    @JsonIgnore
+    private String createdDate;
+    private String symptoms;
+    private String priorMedicalHistory;
+
 }
