@@ -1,6 +1,7 @@
 package com.bmc.appointmentservice.config;
 
 import com.bmc.appointmentservice.model.Appointment;
+import com.bmc.appointmentservice.model.Prescription;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -42,7 +43,23 @@ public class KafkaConfig {
     }
 
     @Bean
+    public ProducerFactory<String, Prescription> producerFactoryPrescription(){
+        Map<String,Object> configProps = new HashMap<>();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,bootStrapAddress);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        JsonSerializer jsonSerializer = new JsonSerializer();
+        jsonSerializer.setAddTypeInfo(false);
+        return new DefaultKafkaProducerFactory<>(configProps,new StringSerializer(),jsonSerializer);
+    }
+
+    @Bean
     public KafkaTemplate<String, Appointment> kafkaTemplate(){
         return new KafkaTemplate<String, Appointment>(producerFactory());
+    }
+
+    @Bean
+    public KafkaTemplate<String, Prescription> kafkaTemplatePrescription(){
+        return new KafkaTemplate<String, Prescription>(producerFactoryPrescription());
     }
 }

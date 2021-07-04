@@ -1,6 +1,7 @@
 package com.bmc.appointmentservice.controller;
 
 import com.bmc.appointmentservice.model.Appointment;
+import com.bmc.appointmentservice.model.Prescription;
 import com.bmc.appointmentservice.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +20,11 @@ public class AppointmentController {
     public ResponseEntity<String> bookAppointment(@PathVariable String userId, @RequestBody Appointment appointment){
         appointment.setUserId(userId);
         return ResponseEntity.ok(appointmentService.appointment(appointment));
+    }
+
+    @PostMapping("/user/{userId}/prescription")
+    public ResponseEntity<String> prescription(@PathVariable String userId, @RequestBody Prescription prescription){
+
+        return ResponseEntity.ok("Success");
     }
 }
