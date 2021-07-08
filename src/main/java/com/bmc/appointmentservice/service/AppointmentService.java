@@ -2,6 +2,7 @@ package com.bmc.appointmentservice.service;
 
 import com.bmc.appointmentservice.entity.Availability;
 import com.bmc.appointmentservice.model.Appointment;
+import com.bmc.appointmentservice.model.AppointmentStatus;
 import com.bmc.appointmentservice.model.Prescription;
 import com.bmc.appointmentservice.model.User;
 import com.bmc.appointmentservice.repository.AppointmentRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static com.bmc.appointmentservice.model.AppointmentStatus.PendingPayment;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class AppointmentService {
     public String appointment(Appointment appointment){
         appointment.setAppointmentId(UUID.randomUUID().toString());
         appointment.setCreatedDate(LocalDateTime.now().toString());
-        appointment.setStatus("PendingPayment");
+        appointment.setStatus(PendingPayment.name());
         List<Availability> availabilities = availabilityService.getAvailabilities(appointment.getDoctorId());
         boolean slotFound = false;
         for(Availability availability: availabilities){

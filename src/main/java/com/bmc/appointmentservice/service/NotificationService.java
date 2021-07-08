@@ -18,7 +18,7 @@ public class NotificationService {
     @Autowired
     KafkaTemplate<String,Prescription> kafkaTemplatePrescription;
 
-    @Value("${doctor.registration.notification}")
+    @Value("${appointment.notification}")
     private String appointmentConfirmationTopic;
 
     @Value("prescription_notification")
