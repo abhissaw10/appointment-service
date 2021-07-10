@@ -18,7 +18,7 @@ public class DoctorAvailabilityController {
     public ResponseEntity<String> saveDoctorAvailability(@PathVariable String id, @RequestBody Availability availabilityRequest){
         availabilityRequest.setDoctorId(id);
         availabilityService.saveDoctorAvailability(availabilityRequest);
-    return ResponseEntity.ok("Success");
+    return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")

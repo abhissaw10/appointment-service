@@ -9,6 +9,9 @@ import com.bmc.appointmentservice.repository.AppointmentRepository;
 import com.bmc.appointmentservice.repository.PrescriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,7 +46,6 @@ public class AppointmentService {
                 if (!availability.isBooked()) {
                     availability.setBooked(true);
                     availabilityService.updateAvailability(availability);
-
                 } else {
                     //TODO throw exception saying slot already booked.
                 }
@@ -71,8 +73,15 @@ public class AppointmentService {
     }
 
     private void notify(Prescription prescription){
-        ResponseEntity<User> userEntity = userClient.getUser(prescription.getUserId());
+
+        ResponseEntity<User> userEntity = userClient.getUser(getAuthorizationToken(),prescription.getUserId());
         prescription.setUserEmailId(userEntity.getBody().getEmailId());
         notificationService.notifyPrescription(prescription);
+    }
+
+    private String getAuthorizationToken() {
+        String token = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getCredentials().toString();
     }
 }

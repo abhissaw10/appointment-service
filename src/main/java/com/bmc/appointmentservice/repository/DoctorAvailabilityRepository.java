@@ -8,4 +8,5 @@ import java.util.List;
 public interface DoctorAvailabilityRepository extends JpaRepository<Availability,String> {
 
     public List<Availability> findByDoctorIdAndIsBooked(String doctorId, boolean isBooked);
+    public List<Availability> findByDoctorIdAndAvailabilityDateIn(String doctorId, List<String> availabilityDate);
 }

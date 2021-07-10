@@ -20,6 +20,8 @@ public class DoctorAvailabilityService {
 
     public void saveDoctorAvailability(Availability availability){
         List<com.bmc.appointmentservice.entity.Availability> availabilityList = new ArrayList<>();
+        List<com.bmc.appointmentservice.entity.Availability> existingAvailabilities = repository.findByDoctorIdAndAvailabilityDateIn(availability.getDoctorId(),availability.getAvailabilityMap().keySet().stream().collect(Collectors.toList()));
+        repository.deleteAll(existingAvailabilities);//Deleting the existing availabilities for the dates
         availability.getAvailabilityMap().forEach((date,slot) -> {
             availabilityList.addAll(slot.stream().map(s->{
                 return com.bmc.appointmentservice.entity.Availability
@@ -55,8 +57,8 @@ public class DoctorAvailabilityService {
         return repository.save(availability);
     }
 
-    private Map<LocalDate,List<String>> getTimeSlots(List<com.bmc.appointmentservice.entity.Availability> availabilities){
-        Map<LocalDate,List<String>> timeSlots = new HashMap<>();
+    private Map<String,List<String>> getTimeSlots(List<com.bmc.appointmentservice.entity.Availability> availabilities){
+        Map<String,List<String>> timeSlots = new HashMap<>();
         for(com.bmc.appointmentservice.entity.Availability availability: availabilities){
             List<String> timeSlotList = timeSlots.get(availability.getAvailabilityDate());
             if(timeSlotList==null || timeSlotList.isEmpty()){

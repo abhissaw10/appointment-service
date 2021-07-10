@@ -18,14 +18,14 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @PostMapping("/user/{userId}/appointment")
-    public ResponseEntity<String> bookAppointment(@PathVariable String userId, @RequestBody Appointment appointment){
-        appointment.setUserId(userId);
+    @PostMapping("/appointment")
+    public ResponseEntity<String> bookAppointment(@RequestBody Appointment appointment){
         return ResponseEntity.ok(appointmentService.appointment(appointment));
     }
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/user/{userId}/prescription")
-    public ResponseEntity<String> prescription(@PathVariable String userId, @RequestBody Prescription prescription){
-        return ResponseEntity.ok("Success");
+    @PostMapping("/prescription")
+    public ResponseEntity prescription(@RequestBody Prescription prescription){
+        appointmentService.prescription(prescription);
+        return ResponseEntity.ok().build();
     }
 }

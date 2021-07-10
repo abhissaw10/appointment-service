@@ -12,5 +12,5 @@ import java.util.Map;
 public class Availability {
 
     private String doctorId;
-    private Map<LocalDate,List<String>> availabilityMap;
+    private Map<String,List<String>> availabilityMap;
 }

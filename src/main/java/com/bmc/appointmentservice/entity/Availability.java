@@ -20,7 +20,7 @@ public class Availability {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String doctorId;
-    private LocalDate availabilityDate;
+    private String availabilityDate;
     private String timeSlot;
     private boolean isBooked;
 }

@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 LOGGER.info("Token is valid! Checking Roles");
                 UserPrincipal userPrincipal = tokenProvider.getUserNameFromToken(jwt);
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userPrincipal, jwt, userPrincipal.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch(Exception ex) {
