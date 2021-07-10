@@ -1,6 +1,8 @@
 package com.bmc.appointmentservice.service;
 
 import com.bmc.appointmentservice.entity.Availability;
+import com.bmc.appointmentservice.exception.ResourceUnAvailableException;
+import com.bmc.appointmentservice.exception.SlotUnavailableException;
 import com.bmc.appointmentservice.model.Appointment;
 import com.bmc.appointmentservice.model.AppointmentStatus;
 import com.bmc.appointmentservice.model.Prescription;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.bmc.appointmentservice.model.AppointmentStatus.PendingPayment;
@@ -34,10 +37,8 @@ public class AppointmentService {
 
     private final UserClient userClient;
 
-    public String appointment(Appointment appointment){
-        appointment.setAppointmentId(UUID.randomUUID().toString());
-        appointment.setCreatedDate(LocalDateTime.now().toString());
-        appointment.setStatus(PendingPayment.name());
+    public String appointment(Appointment appointment) throws SlotUnavailableException {
+
         List<Availability> availabilities = availabilityService.getAvailabilities(appointment.getDoctorId());
         boolean slotFound = false;
         for(Availability availability: availabilities){
@@ -48,16 +49,20 @@ public class AppointmentService {
                     availabilityService.updateAvailability(availability);
                 } else {
                     //TODO throw exception saying slot already booked.
+                    throw new SlotUnavailableException();
                 }
                 slotFound=true;
                 break;
             }
         }
         if(slotFound) {
+            appointment.setAppointmentId(UUID.randomUUID().toString());
+            appointment.setCreatedDate(LocalDateTime.now().toString());
+            appointment.setStatus(PendingPayment.name());
             appointmentRepository.save(appointment);
             notify(appointment);
         }else{
-            //TODO Not an available Slot exception
+            throw new SlotUnavailableException();
         }
         return appointment.getAppointmentId();
     }
@@ -83,5 +88,15 @@ public class AppointmentService {
         String token = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getCredentials().toString();
+    }
+
+    public Appointment getAppointment(String appointmentId) {
+        return Optional.ofNullable(appointmentRepository.findById(appointmentId))
+            .get()
+            .orElseThrow(ResourceUnAvailableException::new);
+    }
+
+    public List<Appointment> getAppointmentsForUser(String userId){
+        return appointmentRepository.findByUserId(userId);
     }
 }

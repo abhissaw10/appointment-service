@@ -1,17 +1,19 @@
 package com.bmc.appointmentservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class Appointment {
     private String userId;
     private String timeSlot;
     private String status;
-    private LocalDate appointmentDate;
+    private String appointmentDate;
     @JsonIgnore
     private String createdDate;
     private String symptoms;
