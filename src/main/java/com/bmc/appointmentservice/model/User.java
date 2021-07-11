@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Id;
 public class User {
     @Id
     private String id;
-    private String firstLame;
+    private String firstName;
     private String lastName;
     private String dob;
     private String mobile;

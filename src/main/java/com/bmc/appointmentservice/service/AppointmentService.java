@@ -4,7 +4,6 @@ import com.bmc.appointmentservice.entity.Availability;
 import com.bmc.appointmentservice.exception.ResourceUnAvailableException;
 import com.bmc.appointmentservice.exception.SlotUnavailableException;
 import com.bmc.appointmentservice.model.Appointment;
-import com.bmc.appointmentservice.model.AppointmentStatus;
 import com.bmc.appointmentservice.model.Prescription;
 import com.bmc.appointmentservice.model.User;
 import com.bmc.appointmentservice.repository.AppointmentRepository;
@@ -12,7 +11,6 @@ import com.bmc.appointmentservice.repository.PrescriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +46,6 @@ public class AppointmentService {
                     availability.setBooked(true);
                     availabilityService.updateAvailability(availability);
                 } else {
-                    //TODO throw exception saying slot already booked.
                     throw new SlotUnavailableException();
                 }
                 slotFound=true;
@@ -74,14 +71,22 @@ public class AppointmentService {
     }
 
     private void notify(Appointment appointment){
+        User user = getUser(appointment.getUserId());
+        appointment.setUserEmailId(user.getEmailId());
+        appointment.setUserName(user.getFirstName() + " "+user.getLastName());
         notificationService.notifyAppointmentConfirmation(appointment);
     }
 
     private void notify(Prescription prescription){
-
-        ResponseEntity<User> userEntity = userClient.getUser(getAuthorizationToken(),prescription.getUserId());
-        prescription.setUserEmailId(userEntity.getBody().getEmailId());
+        User user = getUser(prescription.getUserId());
+        prescription.setUserEmailId(user.getEmailId());
+        prescription.setPatientName(user.getFirstName() + user.getLastName());
         notificationService.notifyPrescription(prescription);
+    }
+
+    private User getUser(String userId){
+        ResponseEntity<User> userEntity = userClient.getUser(getAuthorizationToken(),userId);
+        return  userEntity.getBody();
     }
 
     private String getAuthorizationToken() {

@@ -22,7 +22,10 @@ public class Appointment {
     @Id
     private String appointmentId;
     private String doctorId;
+    private String doctorName;
     private String userId;
+    private String userName;
+    private String userEmailId;
     private String timeSlot;
     private String status;
     private String appointmentDate;
